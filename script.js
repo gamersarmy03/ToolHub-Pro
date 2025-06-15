@@ -23,9 +23,16 @@ class ToolHubPro {
     setupMobileNavigation() {
         // Close mobile nav when clicking on nav links
         document.querySelectorAll('.nav a').forEach(link => {
-            link.addEventListener('click', () => {
+            link.addEventListener('click', (e) => {
                 const nav = document.getElementById('nav');
                 nav.classList.remove('active');
+                
+                // Handle smooth scrolling for anchor links
+                const href = link.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    this.smoothScrollTo(href);
+                }
             });
         });
 
@@ -34,19 +41,22 @@ class ToolHubPro {
             const nav = document.getElementById('nav');
             const toggle = document.querySelector('.mobile-nav-toggle');
             
-            if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+            if (nav && toggle && !nav.contains(e.target) && !toggle.contains(e.target)) {
                 nav.classList.remove('active');
             }
         });
     }
 
     setupEventListeners() {
-        // Tool card click events
-        document.querySelectorAll('.tool-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                const toolName = e.currentTarget.getAttribute('data-tool');
-                this.selectTool(toolName);
-            });
+        // Tool card click events - Fixed to properly handle clicks
+        document.addEventListener('click', (e) => {
+            const toolCard = e.target.closest('.tool-card');
+            if (toolCard) {
+                const toolName = toolCard.getAttribute('data-tool');
+                if (toolName) {
+                    this.selectTool(toolName);
+                }
+            }
         });
 
         // File input change event
@@ -64,17 +74,6 @@ class ToolHubPro {
                 this.processFiles();
             });
         }
-
-        // Navigation smooth scrolling
-        document.querySelectorAll('nav a, .footer a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                const href = link.getAttribute('href');
-                if (href.startsWith('#')) {
-                    e.preventDefault();
-                    this.smoothScrollTo(href);
-                }
-            });
-        });
     }
 
     setupFileUpload() {
@@ -110,6 +109,7 @@ class ToolHubPro {
     }
 
     selectTool(toolName) {
+        console.log('Tool selected:', toolName);
         this.currentTool = toolName;
         this.showUploadSection();
         this.updateUploadUI(toolName);
@@ -120,18 +120,23 @@ class ToolHubPro {
         const uploadSection = document.getElementById('upload-area');
         if (uploadSection) {
             uploadSection.style.display = 'block';
+            console.log('Upload section shown');
         }
     }
 
     updateUploadUI(toolName) {
         const toolConfig = this.getToolConfig(toolName);
         
-        document.getElementById('upload-title').textContent = toolConfig.title;
-        document.getElementById('upload-description').textContent = toolConfig.description;
+        const uploadTitle = document.getElementById('upload-title');
+        const uploadDescription = document.getElementById('upload-description');
+        
+        if (uploadTitle) uploadTitle.textContent = toolConfig.title;
+        if (uploadDescription) uploadDescription.textContent = toolConfig.description;
         
         const fileInput = document.getElementById('file-input');
         if (fileInput) {
             fileInput.setAttribute('accept', toolConfig.accept);
+            fileInput.multiple = toolConfig.multiple;
         }
     }
 
@@ -207,6 +212,42 @@ class ToolHubPro {
                 title: 'Convert Images to PDF',
                 description: 'Select images to convert to PDF document',
                 accept: '.jpg,.jpeg,.png,.webp,.gif',
+                multiple: true
+            },
+            'excel-to-pdf': {
+                title: 'Convert Excel to PDF',
+                description: 'Select Excel files to convert to PDF',
+                accept: '.xls,.xlsx',
+                multiple: true
+            },
+            'ppt-to-pdf': {
+                title: 'Convert PowerPoint to PDF',
+                description: 'Select PowerPoint files to convert to PDF',
+                accept: '.ppt,.pptx',
+                multiple: true
+            },
+            'html-to-pdf': {
+                title: 'Convert HTML to PDF',
+                description: 'Select HTML files to convert to PDF',
+                accept: '.html,.htm',
+                multiple: true
+            },
+            'txt-to-pdf': {
+                title: 'Convert Text to PDF',
+                description: 'Select text files to convert to PDF',
+                accept: '.txt',
+                multiple: true
+            },
+            'epub-to-pdf': {
+                title: 'Convert EPUB to PDF',
+                description: 'Select EPUB files to convert to PDF',
+                accept: '.epub',
+                multiple: true
+            },
+            'xml-to-pdf': {
+                title: 'Convert XML to PDF',
+                description: 'Select XML files to convert to PDF',
+                accept: '.xml',
                 multiple: true
             }
         };
@@ -435,7 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Add some utility functions
 const utils = {
     // Debounce function for performance
     debounce: (func, wait) => {
