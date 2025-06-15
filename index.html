@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ToolHub Pro - Your Gateway to Digital Efficiency</title>
-    <link rel="stylesheet" href="styles.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -119,6 +120,34 @@
         <p>&copy; 2025 ToolHub Pro. All rights reserved. | Crafted with Precision in Lucknow, India</p>
     </footer>
 
+    <div id="toolModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modal-tool-title"></h2>
+            <p id="modal-tool-description"></p>
+
+            <div id="modal-upload-section">
+                <h3>Drag & Drop your files here or click to upload</h3>
+                <input type="file" id="modalFileInput" multiple style="display: none;">
+                <button class="action-button" id="browseFilesButton">Browse Files</button>
+                <p style="font-size: 0.9em; color: #777; margin-top: 10px;">(Multiple files for merge/combine tools)</p>
+            </div>
+
+            <div id="modal-processing-status" style="display: none;">
+                <p>Processing your files... Please wait.</p>
+                <div style="width: 100%; background-color: #f3f3f3; border-radius: 5px; margin-top: 10px;">
+                    <div id="modalProgressBar" style="width: 0%; height: 25px; background-color: var(--light-purple); border-radius: 5px; text-align: center; line-height: 25px; color: white; font-weight: 600;">0%</div>
+                </div>
+            </div>
+
+            <div id="modal-download-section" style="display: none;">
+                <h3>Your file is ready!</h3>
+                <a href="#" class="action-button" id="modalDownloadLink" download>Download Result</a>
+            </div>
+
+            <button class="action-button back-button" id="modalCloseButton" style="margin-top: 30px;">Close Tool</button>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
-    </html>
+</html>
