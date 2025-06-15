@@ -1,5 +1,10 @@
-
 // ToolHub Pro - Main JavaScript File
+
+// Mobile Navigation Toggle Function
+function toggleMobileNav() {
+    const nav = document.getElementById('nav');
+    nav.classList.toggle('active');
+}
 
 class ToolHubPro {
     constructor() {
@@ -12,6 +17,27 @@ class ToolHubPro {
         this.setupEventListeners();
         this.setupFileUpload();
         this.setupSmoothScrolling();
+        this.setupMobileNavigation();
+    }
+
+    setupMobileNavigation() {
+        // Close mobile nav when clicking on nav links
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                const nav = document.getElementById('nav');
+                nav.classList.remove('active');
+            });
+        });
+
+        // Close mobile nav when clicking outside
+        document.addEventListener('click', (e) => {
+            const nav = document.getElementById('nav');
+            const toggle = document.querySelector('.mobile-nav-toggle');
+            
+            if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+                nav.classList.remove('active');
+            }
+        });
     }
 
     setupEventListeners() {
