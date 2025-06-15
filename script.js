@@ -3,7 +3,10 @@
 // Mobile Navigation Toggle Function
 function toggleMobileNav() {
     const nav = document.getElementById('nav');
-    nav.classList.toggle('active');
+    if (nav) {
+        nav.classList.toggle('active');
+        console.log('Mobile nav toggled, active:', nav.classList.contains('active'));
+    }
 }
 
 class ToolHubPro {
@@ -18,6 +21,7 @@ class ToolHubPro {
         this.setupFileUpload();
         this.setupSmoothScrolling();
         this.setupMobileNavigation();
+        this.setupToolCards();
     }
 
     setupMobileNavigation() {
@@ -25,11 +29,13 @@ class ToolHubPro {
         document.querySelectorAll('.nav a').forEach(link => {
             link.addEventListener('click', (e) => {
                 const nav = document.getElementById('nav');
-                nav.classList.remove('active');
+                if (nav) {
+                    nav.classList.remove('active');
+                }
                 
                 // Handle smooth scrolling for anchor links
                 const href = link.getAttribute('href');
-                if (href.startsWith('#')) {
+                if (href && href.startsWith('#')) {
                     e.preventDefault();
                     this.smoothScrollTo(href);
                 }
@@ -47,18 +53,24 @@ class ToolHubPro {
         });
     }
 
-    setupEventListeners() {
-        // Tool card click events - Fixed to properly handle clicks
-        document.addEventListener('click', (e) => {
-            const toolCard = e.target.closest('.tool-card');
-            if (toolCard) {
-                const toolName = toolCard.getAttribute('data-tool');
+    setupToolCards() {
+        // Add click event listeners to all tool cards
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const toolName = card.getAttribute('data-tool');
+                console.log('Tool card clicked:', toolName);
+                
                 if (toolName) {
                     this.selectTool(toolName);
                 }
-            }
+            });
         });
+    }
 
+    setupEventListeners() {
         // File input change event
         const fileInput = document.getElementById('file-input');
         if (fileInput) {
