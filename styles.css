@@ -214,7 +214,7 @@ main {
     margin-bottom: 25px;
 }
 
-.tool-button {
+.tool-button, .action-button { /* Apply similar styling to modal action buttons */
     background-color: var(--primary-purple);
     color: var(--text-light);
     border: none;
@@ -224,13 +224,23 @@ main {
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    align-self: center; /* Center the button in the flex container */
+    text-decoration: none; /* For anchor tags used as buttons */
+    display: inline-block; /* For buttons and anchors to have same layout */
+    margin: 5px; /* Add some margin for button groups */
 }
 
-.tool-button:hover {
+.tool-button:hover, .action-button:hover {
     background-color: var(--light-purple);
     transform: translateY(-2px);
 }
+
+.back-button { /* Specific style for back/close buttons */
+    background-color: #7f8c8d; /* Gray */
+}
+.back-button:hover {
+    background-color: #95a5a6;
+}
+
 
 /* About Section */
 #about {
@@ -266,6 +276,103 @@ footer {
     font-size: 0.95rem;
     margin-top: 50px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+/* --- Modal Specific Styles --- */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 2000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    padding: 20px; /* Padding around content */
+}
+
+.modal-content {
+    background-color: var(--background-light);
+    margin: auto;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px var(--shadow-strong);
+    width: 90%; /* Max width for content */
+    max-width: 700px;
+    position: relative;
+    text-align: center;
+    animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--primary-purple);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    color: var(--primary-purple);
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+}
+
+.modal-content p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+#modal-upload-section {
+    border: 2px dashed var(--border-light);
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+#modal-upload-section h3 {
+    color: var(--accent-purple);
+    margin-top: 0;
+    font-size: 1.4rem;
+}
+
+#modal-processing-status {
+    margin-bottom: 20px;
+}
+#modal-processing-status p {
+    font-weight: 600;
+    color: var(--accent-purple);
+}
+#modalProgressBar {
+    background-color: var(--primary-purple) !important; /* Ensure primary purple color */
+}
+
+#modal-download-section {
+    margin-bottom: 20px;
+}
+#modal-download-section h3 {
+    color: var(--accent-purple);
+    font-size: 1.4rem;
+    margin-bottom: 15px;
 }
 
 /* --- Responsive Design for Mobile UI Improvements --- */
@@ -310,7 +417,7 @@ footer {
     .tool-card p {
         min-height: auto; /* Allow height to adjust */
     }
-    .tool-button {
+    .tool-button, .action-button {
         font-size: 1rem;
         padding: 10px 20px;
     }
@@ -319,6 +426,15 @@ footer {
     }
     #about p {
         font-size: 1.1rem;
+    }
+
+    /* Modal responsiveness */
+    .modal-content {
+        max-width: 600px;
+        padding: 30px;
+    }
+    .modal-content h2 {
+        font-size: 2rem;
     }
 }
 
@@ -384,7 +500,7 @@ footer {
         min-height: auto; /* Allow height to adjust */
         margin-bottom: 20px;
     }
-    .tool-button {
+    .tool-button, .action-button {
         padding: 10px 20px;
         font-size: 0.95rem;
     }
@@ -401,6 +517,26 @@ footer {
     footer {
         padding: 1.5rem 0;
         font-size: 0.85rem;
+    }
+
+    /* Modal responsiveness */
+    .modal-content {
+        width: 95%; /* Wider on small screens */
+        padding: 20px;
+    }
+    .modal-content h2 {
+        font-size: 1.8rem;
+    }
+    .close-button {
+        font-size: 30px;
+        top: 15px;
+        right: 20px;
+    }
+    #modal-upload-section h3 {
+        font-size: 1.2rem;
+    }
+    #modal-download-section h3 {
+        font-size: 1.2rem;
     }
 }
 
@@ -432,7 +568,7 @@ footer {
     .tool-card p {
         font-size: 0.9rem;
     }
-    .tool-button {
+    .tool-button, .action-button {
         padding: 8px 15px;
         font-size: 0.9rem;
     }
@@ -442,4 +578,4 @@ footer {
     #about p {
         font-size: 0.9rem;
     }
-    }
+}
