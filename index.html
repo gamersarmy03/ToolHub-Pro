@@ -3,241 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToolHub Pro - PDF, Image & Document Tools</title>
-    <meta name="description" content="Free online tools for PDF, image, and document processing. Convert, merge, split, compress and more.">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+    <title>ToolHub Pro - Your Gateway to Digital Efficiency</title>
+    <link rel="stylesheet" href="styless.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <span class="logo-icon">🔧</span>
-                <h1>ToolHub Pro</h1>
-            </div>
-            <button class="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Toggle navigation">
-                ☰
-            </button>
-            <nav class="nav" id="nav">
-                <a href="#pdf-tools">PDF Tools</a>
-                <a href="#image-tools">Image Tools</a>
-                <a href="#document-tools">Document Tools</a>
-                <a href="#about">About</a>
-            </nav>
-        </div>
+    <header>
+        <h1>ToolHub Pro</h1>
+        <nav>
+            <ul>
+                <li><a href="#pdf-tools">PDF Tools</a></li>
+                <li><a href="#image-tools">Image Tools</a></li>
+                <li><a href="#document-tools">Document Tools</a></li>
+                <li><a href="#about">About Us</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main>
-        <section class="hero">
-            <div class="container">
-                <h2>All Your Document Tools in One Place</h2>
-                <p>Process PDFs, images, and documents online - completely free and secure</p>
-                <div class="hero-stats">
-                    <div class="stat">
-                        <span class="stat-number">25+</span>
-                        <span class="stat-label">Tools Available</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">100%</span>
-                        <span class="stat-label">Free to Use</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">Secure</span>
-                        <span class="stat-label">Processing</span>
-                    </div>
+        <section id="hero">
+            <h2>Transform Your Documents, Images & More</h2>
+            <p>Unlock a world of digital possibilities with ToolHub Pro. Our intuitive tools empower you to effortlessly manage PDFs, enhance images, and streamline document workflows.</p>
+            <button id="getStartedBtn">Start Exploring Tools</button>
+        </section>
+
+        <section id="pdf-tools" class="tool-section">
+            <h2>PDF Powerhouse</h2>
+            <div class="tool-grid">
+                <div class="tool-card" data-tool="pdf-merge">
+                    <h3>Merge PDFs Seamlessly</h3>
+                    <p>Combine multiple PDF documents into one cohesive file with ease.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="pdf-split">
+                    <h3>Split PDFs Precisely</h3>
+                    <p>Extract specific pages or ranges to create new, focused PDF files.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="pdf-compress">
+                    <h3>Compress PDFs Efficiently</h3>
+                    <p>Reduce file size without compromising quality, perfect for sharing.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="pdf-to-word">
+                    <h3>PDF to Word Conversion</h3>
+                    <p>Convert your PDFs into editable Microsoft Word documents for quick edits.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="pdf-unlock">
+                    <h3>Unlock PDF Security</h3>
+                    <p>Remove passwords and restrictions from your secured PDF files.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="pdf-rotate">
+                    <h3>Rotate PDF Pages</h3>
+                    <p>Adjust the orientation of pages within your PDF documents.</p>
+                    <button class="tool-button">Access Tool</button>
                 </div>
             </div>
         </section>
 
-        <section id="pdf-tools" class="tools-section">
-            <div class="container">
-                <h3>PDF Tools</h3>
-                <div class="tools-grid">
-                    <div class="tool-card" data-tool="merge-pdf">
-                        <div class="tool-icon">📑</div>
-                        <h4>Merge PDF</h4>
-                        <p>Combine multiple PDFs into one document</p>
-                    </div>
-                    <div class="tool-card" data-tool="split-pdf">
-                        <div class="tool-icon">✂️</div>
-                        <h4>Split PDF</h4>
-                        <p>Extract pages from your PDF</p>
-                    </div>
-                    <div class="tool-card" data-tool="compress-pdf">
-                        <div class="tool-icon">🗜️</div>
-                        <h4>Compress PDF</h4>
-                        <p>Reduce PDF file size</p>
-                    </div>
-                    <div class="tool-card" data-tool="pdf-to-word">
-                        <div class="tool-icon">📄</div>
-                        <h4>PDF to Word</h4>
-                        <p>Convert PDF to editable Word document</p>
-                    </div>
-                    <div class="tool-card" data-tool="word-to-pdf">
-                        <div class="tool-icon">📝</div>
-                        <h4>Word to PDF</h4>
-                        <p>Convert Word documents to PDF</p>
-                    </div>
-                    <div class="tool-card" data-tool="pdf-to-jpg">
-                        <div class="tool-icon">🖼️</div>
-                        <h4>PDF to JPG</h4>
-                        <p>Convert PDF pages to images</p>
-                    </div>
+        <section id="image-tools" class="tool-section">
+            <h2>Image Enhancements</h2>
+            <div class="tool-grid">
+                <div class="tool-card" data-tool="image-resize">
+                    <h3>Resize Images Instantly</h3>
+                    <p>Adjust image dimensions to fit any requirement without hassle.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="image-compress">
+                    <h3>Optimize Image Size</h3>
+                    <p>Compress images for faster loading times on web and mobile.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="image-convert">
+                    <h3>Versatile Image Converter</h3>
+                    <p>Convert images between popular formats like JPG, PNG, GIF, and more.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="image-crop">
+                    <h3>Crop Images Precisely</h3>
+                    <p>Focus on key areas by easily cropping your photos to perfection.</p>
+                    <button class="tool-button">Access Tool</button>
                 </div>
             </div>
         </section>
 
-        <section id="image-tools" class="tools-section">
-            <div class="container">
-                <h3>Image Tools</h3>
-                <div class="tools-grid">
-                    <div class="tool-card" data-tool="compress-image">
-                        <div class="tool-icon">🖼️</div>
-                        <h4>Compress Image</h4>
-                        <p>Reduce image file size without losing quality</p>
-                    </div>
-                    <div class="tool-card" data-tool="resize-image">
-                        <div class="tool-icon">📏</div>
-                        <h4>Resize Image</h4>
-                        <p>Change image dimensions</p>
-                    </div>
-                    <div class="tool-card" data-tool="convert-image">
-                        <div class="tool-icon">🔄</div>
-                        <h4>Convert Format</h4>
-                        <p>Convert between JPG, PNG, WebP, etc.</p>
-                    </div>
-                    <div class="tool-card" data-tool="crop-image">
-                        <div class="tool-icon">✂️</div>
-                        <h4>Crop Image</h4>
-                        <p>Cut and crop your images</p>
-                    </div>
-                    <div class="tool-card" data-tool="rotate-image">
-                        <div class="tool-icon">🔄</div>
-                        <h4>Rotate Image</h4>
-                        <p>Rotate images by any angle</p>
-                    </div>
-                    <div class="tool-card" data-tool="jpg-to-pdf">
-                        <div class="tool-icon">📄</div>
-                        <h4>JPG to PDF</h4>
-                        <p>Convert images to PDF document</p>
-                    </div>
+        <section id="document-tools" class="tool-section">
+            <h2>Document Mastery</h2>
+            <div class="tool-grid">
+                <div class="tool-card" data-tool="word-to-pdf">
+                    <h3>Word to PDF Converter</h3>
+                    <p>Transform your Word documents into universally compatible PDF files.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="excel-to-pdf">
+                    <h3>Excel to PDF Converter</h3>
+                    <p>Convert your spreadsheets to professional PDF documents effortlessly.</p>
+                    <button class="tool-button">Access Tool</button>
+                </div>
+                <div class="tool-card" data-tool="text-to-pdf">
+                    <h3>Text to PDF Creator</h3>
+                    <p>Convert plain text files into well-formatted PDF documents.</p>
+                    <button class="tool-button">Access Tool</button>
                 </div>
             </div>
         </section>
 
-        <section id="document-tools" class="tools-section">
-            <div class="container">
-                <h3>Document Tools</h3>
-                <div class="tools-grid">
-                    <div class="tool-card" data-tool="excel-to-pdf">
-                        <div class="tool-icon">📊</div>
-                        <h4>Excel to PDF</h4>
-                        <p>Convert Excel spreadsheets to PDF</p>
-                    </div>
-                    <div class="tool-card" data-tool="ppt-to-pdf">
-                        <div class="tool-icon">📈</div>
-                        <h4>PowerPoint to PDF</h4>
-                        <p>Convert presentations to PDF</p>
-                    </div>
-                    <div class="tool-card" data-tool="html-to-pdf">
-                        <div class="tool-icon">🌐</div>
-                        <h4>HTML to PDF</h4>
-                        <p>Convert web pages to PDF</p>
-                    </div>
-                    <div class="tool-card" data-tool="txt-to-pdf">
-                        <div class="tool-icon">📝</div>
-                        <h4>Text to PDF</h4>
-                        <p>Convert text files to PDF</p>
-                    </div>
-                    <div class="tool-card" data-tool="epub-to-pdf">
-                        <div class="tool-icon">📚</div>
-                        <h4>EPUB to PDF</h4>
-                        <p>Convert eBooks to PDF format</p>
-                    </div>
-                    <div class="tool-card" data-tool="xml-to-pdf">
-                        <div class="tool-icon">⚙️</div>
-                        <h4>XML to PDF</h4>
-                        <p>Convert XML documents to PDF</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="upload-section" id="upload-area" style="display: none;">
-            <div class="container">
-                <div class="upload-box">
-                    <div class="upload-icon">📤</div>
-                    <h3 id="upload-title">Upload Your Files</h3>
-                    <p id="upload-description">Drag and drop files here or click to browse</p>
-                    <input type="file" id="file-input" multiple accept="*/*" style="display: none;">
-                    <button class="upload-btn" onclick="document.getElementById('file-input').click()">
-                        Choose Files
-                    </button>
-                    <div class="file-list" id="file-list"></div>
-                    <button class="process-btn" id="process-btn" style="display: none;">
-                        Process Files
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="about-section">
-            <div class="container">
-                <h3>Why Choose ToolHub Pro?</h3>
-                <div class="features-grid">
-                    <div class="feature">
-                        <div class="feature-icon">🔒</div>
-                        <h4>100% Secure</h4>
-                        <p>All files are processed securely and automatically deleted</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">⚡</div>
-                        <h4>Lightning Fast</h4>
-                        <p>Quick processing with optimized algorithms</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">💰</div>
-                        <h4>Completely Free</h4>
-                        <p>No hidden costs, no registration required</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">📱</div>
-                        <h4>Any Device</h4>
-                        <p>Works on desktop, tablet, and mobile devices</p>
-                    </div>
-                </div>
-            </div>
+        <section id="about">
+            <h2>About ToolHub Pro</h2>
+            <p>At ToolHub Pro, we believe in empowering individuals and businesses with **simple, powerful, and secure** digital tools. Our mission is to provide an all-in-one platform where you can confidently manage and transform your **PDFs, images, and various document types** with just a few clicks. We are committed to continuous improvement, ensuring our tools remain at the forefront of innovation and user convenience.</p>
         </section>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>ToolHub Pro</h4>
-                    <p>Your one-stop solution for document processing</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Tools</h4>
-                    <ul>
-                        <li><a href="#pdf-tools">PDF Tools</a></li>
-                        <li><a href="#image-tools">Image Tools</a></li>
-                        <li><a href="#document-tools">Document Tools</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#help">Help Center</a></li>
-                        <li><a href="#contact">Contact Us</a></li>
-                        <li><a href="#privacy">Privacy Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 ToolHub Pro. All rights reserved.</p>
-            </div>
-        </div>
+    <footer>
+        <p>&copy; 2025 ToolHub Pro. All rights reserved. | Crafted with Precision in Lucknow, India</p>
     </footer>
 
     <script src="script.js"></script>
