@@ -1,21 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Racing Game</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>3D Car Game</title>
+  <style>
+    html, body {
+      margin: 0; 
+      height: 100%; 
+      overflow: hidden; 
+      background: #000;
+    }
+    #ui {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      border: 2px solid #fff;
+      background: transparent;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #fff;
+      color: #000;
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    #score {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #fff;
+      font-size: 20px;
+      font-family: sans-serif;
+    }
+  </style>
 </head>
 <body>
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
-        <div id="ui-overlay">
-            <div id="speed-display">Speed: 0 KM/H</div>
-        </div>
-    </div>
+  <div id="ui">
+    <button id="storeBtn">Store</button>
+    <button id="resetBtn">Reset</button>
+    <button id="challengeBtn">Challenge</button>
+  </div>
+  <div id="score">Score: 0</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  <script>
+    // Scene, Camera, Renderer
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x202020);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-    <script type="module" src="https://unpkg.com/three@0.150.1/build/three.module.js"></script>
-    <script type="module" src="https://unpkg.com/three@0.150.1/examples/jsm/loaders/GLTFLoader.js"></script>
-    <script type="module" src="script.js"></script>
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 10, 7.5);
+    scene.add(directionalLight);
+
+    // Ground
+    const groundGeometry = new THREE.PlaneGeometry(500, 500);
+    const groundMaterial = new THREE.MeshStandardMaterial({color: 0x333333});
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI/2;
+    scene.add(ground);
+
+    // Car (simple box)
+    const carGeometry = new THREE.BoxGeometry(2, 1, 4);
+    const carMaterial = new THREE.MeshStandardMaterial({color: 0xff0000});
+    const car = new THREE.Mesh(carGeometry, carMaterial);
+    car.position.y = 0.5;
+    scene.add(car);
+
+    camera.position.set(0, 5, 10);
+    camera.lookAt(car.position);
+
+    // Controls
+    const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+    document.addEventListener('keydown', e => keys[e.key] = true);
+    document.addEventListener('keyup', e => keys[e.key] = false);
+
+    // Score and Challenge
+    let score = 0;
+    let challengeActive = false;
+    const scoreEl = document.getElementById('score');
+
+    function updateScore() {
+      scoreEl.textContent = `Score: ${score}`;
+    }
+
+    // Store Button
+    document.getElementById('storeBtn').onclick = () => {
+      alert(`Score stored: ${score}`);
+    };
+
+    // Reset Button
+    document.getElementById('resetBtn').onclick = () => {
+      car.position.set(0, 0.5, 0);
+      score = 0;
+      updateScore();
+    };
+
+    // Challenge Button
+    document.getElementById('challengeBtn').onclick = () => {
+      challengeActive = !challengeActive;
+      if (challengeActive) {
+        alert("Challenge Started! Gain points by moving.");
+      } else {
+        alert("Challenge Ended!");
+      }
+    };
+
+    // Animate
+    function animate() {
+      requestAnimationFrame(animate);
+
+      let speed = 0.2;
+      if (keys.ArrowUp) car.position.z -= speed;
+      if (keys.ArrowDown) car.position.z += speed;
+      if (keys.ArrowLeft) car.position.x -= speed;
+      if (keys.ArrowRight) car.position.x += speed;
+
+      if (challengeActive) {
+        score += 1;
+        updateScore();
+      }
+
+      camera.position.x = car.position.x;
+      camera.position.z = car.position.z + 10;
+      camera.lookAt(car.position);
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 </body>
 </html>
