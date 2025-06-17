@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>3D Car Game Improved</title>
+  <title>3D Car Game with Scenery</title>
   <style>
     html, body {
       margin: 0; padding: 0; overflow: hidden;
@@ -45,12 +45,14 @@
     let score = 0;
     let envIndex = 0;
     let envSkyColors = [
-      [0x87CEEB, 0xFFFFFF], // city (sky blue to white)
-      [0x228B22, 0x87CEEB], // forest (greenish to sky)
-      [0xEDC9AF, 0xFFE4B5], // desert (sandy to light)
-      [0xA9A9A9, 0xD3D3D3], // mountain (grey to light)
-      [0x006400, 0x87CEEB]  // village (dark green to sky)
+      [0x87CEEB, 0xFFFFFF], // city
+      [0x228B22, 0x87CEEB], // forest
+      [0xEDC9AF, 0xFFE4B5], // desert
+      [0xA9A9A9, 0xD3D3D3], // mountain
+      [0x006400, 0x87CEEB]  // village
     ];
+
+    let scenery = [];
 
     init();
     animate();
@@ -87,7 +89,7 @@
         scene.add(line);
       }
 
-      // Car: use boxes for body and wheels
+      // Car
       car = new THREE.Group();
       let bodyGeo = new THREE.BoxGeometry(2, 1, 4);
       let bodyMat = new THREE.MeshStandardMaterial({ color: 0xff0000 });
@@ -117,14 +119,37 @@
 
       window.addEventListener('resize', onWindowResize, false);
       document.addEventListener('keydown', handleKey);
+
+      // Add initial scenery
+      for (let i = 0; i < 20; i++) {
+        addScenery();
+      }
     }
 
     function updateEnvironment() {
       let [topColor, bottomColor] = envSkyColors[envIndex];
-      let sky = new THREE.Color(topColor);
-      scene.background = sky;
-      // Optional: gradient effect by fog
+      scene.background = new THREE.Color(topColor);
       scene.fog = new THREE.Fog(bottomColor, 50, 200);
+    }
+
+    function addScenery() {
+      let treeGeo = new THREE.CylinderGeometry(0, 0.5, 2, 8);
+      let treeMat = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+      let trunkGeo = new THREE.CylinderGeometry(0.1, 0.1, 1, 8);
+      let trunkMat = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+
+      let tree = new THREE.Group();
+      let leaves = new THREE.Mesh(treeGeo, treeMat);
+      leaves.position.y = 1.5;
+      let trunk = new THREE.Mesh(trunkGeo, trunkMat);
+      trunk.position.y = 0.5;
+      tree.add(trunk);
+      tree.add(leaves);
+
+      tree.position.x = (Math.random() > 0.5 ? 1 : -1) * (10 + Math.random() * 5);
+      tree.position.z = -Math.random() * 500;
+      scene.add(tree);
+      scenery.push(tree);
     }
 
     function onWindowResize() {
@@ -154,6 +179,23 @@
         updateEnvironment();
       }
 
+      scenery.forEach(tree => {
+        tree.position.z += 1.5;
+      });
+
+      if (scenery.length < 20) {
+        addScenery();
+      }
+
+      // Remove offscreen scenery
+      scenery = scenery.filter(tree => {
+        if (tree.position.z > 10) {
+          scene.remove(tree);
+          return false;
+        }
+        return true;
+      });
+
       score += 1;
       document.getElementById("score").innerText = "Score: " + score;
 
@@ -170,6 +212,9 @@
       updateEnvironment();
       car.position.x = lanes[1];
       currentLane = 1;
+      scenery.forEach(tree => scene.remove(tree));
+      scenery = [];
+      for (let i = 0; i < 20; i++) addScenery();
     }
   </script>
 </body>
