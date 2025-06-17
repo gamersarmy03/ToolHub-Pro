@@ -62,9 +62,9 @@ function init() {
 
     // Load Car Model
     const loader = new GLTFLoader();
-    // IMPORTANT: Replace 'path/to/your/car.glb' with the actual path to your car model
+    // UPDATED PATH HERE:
     loader.load(
-        'path/to/your/car.glb', // e.g., 'models/ferrari.glb'
+        './models/car_glb.glb', // Assumes script.js is in the same directory as the 'models' folder
         function (gltf) {
             car = gltf.scene;
             car.scale.set(0.5, 0.5, 0.5); // Adjust scale as needed
