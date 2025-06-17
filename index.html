@@ -2,175 +2,254 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>3D Car Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>3D Car Game - Landscape + Mobile Controls</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, orientation=landscape">
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: #000;
+      margin: 0; padding: 0; overflow: hidden;
+      height: 100%; width: 100%; background: #000;
+      font-family: Arial, sans-serif;
     }
-
-    canvas {
-      display: block;
+    #score {
+      position: absolute; top: 10px; left: 10px; color: #fff; font-size: 20px; z-index: 2;
     }
-
-    .controls {
-      position: absolute;
-      bottom: 20px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 40px;
-      box-sizing: border-box;
+    #buttons {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
     }
-
     .btn {
-      border: 2px solid #fff;
-      background: transparent;
-      color: #fff;
-      padding: 20px 40px;
-      font-size: 20px;
-      border-radius: 12px;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      user-select: none;
+      border: 2px solid #fff; background: transparent; color: #fff;
+      padding: 8px 16px; margin-left: 10px; cursor: pointer;
+      font-size: 16px; border-radius: 4px; transition: all 0.3s ease;
     }
+    .btn:hover { background: #fff; color: #000; }
+    .btn:active { transform: scale(0.9); }
 
-    .btn:active {
-      background: rgba(255,255,255,0.2);
-      transform: scale(0.95);
+    /* Mobile Controls */
+    #brake, #accelerate {
+      position: absolute; bottom: 30px; width: 100px; height: 100px;
+      border: 3px solid #fff; border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      color: #fff; font-size: 18px; text-align: center; line-height: 100px;
+      z-index: 2; transition: all 0.2s ease;
     }
-
-    /* Landscape prompt */
-    #rotate {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #000;
-      color: #fff;
-      font-size: 30px;
-      text-align: center;
-      padding-top: 40%;
-      z-index: 999;
+    #brake:active, #accelerate:active {
+      background: rgba(255,255,255,0.5);
+      transform: scale(0.9);
     }
+    #brake { left: 30px; }
+    #accelerate { right: 30px; }
 
-    @media screen and (orientation: portrait) {
-      #rotate {
-        display: block;
-      }
+    @media (max-width: 800px) {
+      #score { font-size: 16px; }
+      .btn { font-size: 14px; padding: 6px 12px; }
+      #brake, #accelerate { width: 80px; height: 80px; line-height: 80px; font-size: 16px; }
     }
   </style>
 </head>
 <body>
-  <div id="rotate">Please rotate your device to landscape mode</div>
-  <div class="controls">
-    <button id="brake" class="btn">Brake</button>
-    <button id="accelerate" class="btn">Accelerate</button>
+  <div id="score">Score: 0</div>
+  <div id="buttons">
+    <button class="btn" onclick="openStore()">Store</button>
+    <button class="btn" onclick="resetGame()">Reset</button>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+  <div id="brake">Brake</div>
+  <div id="accelerate">Gas</div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
   <script>
-    // Basic Three.js setup
-    let scene = new THREE.Scene();
-    let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    let renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    let scene, camera, renderer;
+    let car, road, ground;
+    let lanes = [-4, 0, 4];
+    let currentLane = 1;
+    let targetLane = 1;
+    let score = 0;
+    let speed = 1.5;
+    let envIndex = 0;
+    let envSkyColors = [
+      [0x87CEEB, 0x87CEEB],
+      [0x87CEFA, 0x98FB98],
+      [0xF0E68C, 0xFFE4B5],
+      [0xA9A9A9, 0xD3D3D3],
+      [0x00FA9A, 0x87CEEB]
+    ];
+    let scenery = [];
 
-    // Ground
-    let ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(500, 500),
-      new THREE.MeshStandardMaterial({color: 0x555555})
-    );
-    ground.rotation.x = -Math.PI/2;
-    scene.add(ground);
+    init();
+    animate();
 
-    // Car
-    let car = new THREE.Mesh(
-      new THREE.BoxGeometry(2, 1, 4),
-      new THREE.MeshStandardMaterial({color: 0xff0000})
-    );
-    car.position.y = 0.5;
-    scene.add(car);
+    function init() {
+      scene = new THREE.Scene();
+      updateEnvironment();
 
-    // Lights
-    let light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 10, 7);
-    scene.add(light);
-    let ambient = new THREE.AmbientLight(0x404040);
-    scene.add(ambient);
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 6, 10);
+      camera.lookAt(0, 0, 0);
 
-    camera.position.set(0, 5, -10);
-    camera.lookAt(car.position);
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
 
-    // Car control variables
-    let speed = 0;
-    let steering = 0;
+      let groundGeo = new THREE.PlaneGeometry(200, 2000);
+      let groundMat = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+      ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = 0;
+      ground.position.z = -1000;
+      scene.add(ground);
 
-    const maxSpeed = 0.2;
-    const acceleration = 0.005;
-    const brakePower = 0.01;
-    const steeringSpeed = 0.05;
+      let roadGeo = new THREE.PlaneGeometry(12, 500);
+      let roadMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+      road = new THREE.Mesh(roadGeo, roadMat);
+      road.rotation.x = -Math.PI / 2;
+      road.position.y = 0.02;
+      road.position.z = -200;
+      scene.add(road);
 
-    let accelerating = false;
-    let braking = false;
+      for (let i = -1; i <= 1; i++) {
+        if (i === 0) continue;
+        let lineGeo = new THREE.BoxGeometry(0.1, 0.1, 500);
+        let lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        let line = new THREE.Mesh(lineGeo, lineMat);
+        line.position.x = i * 4;
+        line.position.y = 0.05;
+        line.position.z = -200;
+        scene.add(line);
+      }
 
-    // Buttons
-    document.getElementById('accelerate').addEventListener('touchstart', () => accelerating = true);
-    document.getElementById('accelerate').addEventListener('touchend', () => accelerating = false);
-    document.getElementById('brake').addEventListener('touchstart', () => braking = true);
-    document.getElementById('brake').addEventListener('touchend', () => braking = false);
+      car = new THREE.Group();
+      let bodyGeo = new THREE.BoxGeometry(2, 1, 4);
+      let bodyMat = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+      let body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.position.y = 0.75;
+      car.add(body);
 
-    // Device orientation
-    window.addEventListener('deviceorientation', function(e) {
-      // gamma: left/right tilt
-      let tilt = e.gamma || 0;
-      steering = THREE.MathUtils.clamp(tilt / 30, -1, 1); // Normalize tilt
-    }, true);
+      let wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16);
+      let wheelMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+      for (let i of [-0.9, 0.9]) {
+        for (let j of [-1.5, 1.5]) {
+          let wheel = new THREE.Mesh(wheelGeo, wheelMat);
+          wheel.rotation.z = Math.PI / 2;
+          wheel.position.set(i, 0.4, j);
+          car.add(wheel);
+        }
+      }
+      car.position.x = lanes[currentLane];
+      scene.add(car);
 
-    // Animation loop
+      const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambient);
+      const directional = new THREE.DirectionalLight(0xffffff, 0.5);
+      directional.position.set(0, 20, 20);
+      scene.add(directional);
+
+      window.addEventListener('resize', onWindowResize, false);
+      document.addEventListener('keydown', handleKey);
+
+      // Mobile tilt
+      window.addEventListener('deviceorientation', handleOrientation);
+
+      // Buttons
+      document.getElementById("brake").ontouchstart = () => speed = 0.5;
+      document.getElementById("brake").ontouchend = () => speed = 1.5;
+      document.getElementById("accelerate").ontouchstart = () => speed = 3;
+      document.getElementById("accelerate").ontouchend = () => speed = 1.5;
+
+      for (let i = 0; i < 40; i++) addScenery();
+    }
+
+    function updateEnvironment() {
+      let [topColor, bottomColor] = envSkyColors[envIndex];
+      scene.background = new THREE.Color(topColor);
+      scene.fog = new THREE.Fog(bottomColor, 50, 200);
+    }
+
+    function addScenery() {
+      let treeGeo = new THREE.CylinderGeometry(0, 0.5, 2, 8);
+      let treeMat = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+      let trunkGeo = new THREE.CylinderGeometry(0.1, 0.1, 1, 8);
+      let trunkMat = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+
+      let tree = new THREE.Group();
+      let leaves = new THREE.Mesh(treeGeo, treeMat);
+      leaves.position.y = 1.5;
+      let trunk = new THREE.Mesh(trunkGeo, trunkMat);
+      trunk.position.y = 0.5;
+      tree.add(trunk);
+      tree.add(leaves);
+
+      tree.position.x = (Math.random() > 0.5 ? 1 : -1) * (8 + Math.random() * 15);
+      tree.position.z = -Math.random() * 1000;
+      tree.position.y = 0;
+      scene.add(tree);
+      scenery.push(tree);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function handleKey(e) {
+      if (e.key === "ArrowLeft" && targetLane > 0) targetLane--;
+      if (e.key === "ArrowRight" && targetLane < lanes.length - 1) targetLane++;
+    }
+
+    function handleOrientation(event) {
+      let tilt = event.gamma; // -90 to 90
+      if (tilt > 15 && targetLane < 2) targetLane = 2;
+      else if (tilt < -15 && targetLane > 0) targetLane = 0;
+      else if (Math.abs(tilt) < 10) targetLane = 1;
+    }
+
     function animate() {
       requestAnimationFrame(animate);
 
-      // Update speed
-      if (accelerating) speed += acceleration;
-      if (braking) speed -= brakePower;
-      if (!accelerating && !braking) speed *= 0.98;
+      road.position.z += speed;
+      ground.position.z += speed;
 
-      speed = THREE.MathUtils.clamp(speed, -maxSpeed, maxSpeed);
+      if (road.position.z > 0) {
+        road.position.z = -200;
+        envIndex = (envIndex + 1) % envSkyColors.length;
+        updateEnvironment();
+      }
+      if (ground.position.z > 0) {
+        ground.position.z = -1000;
+      }
 
-      // Smooth steering
-      car.rotation.y -= steering * steeringSpeed;
+      scenery.forEach(tree => { tree.position.z += speed; });
+      if (scenery.length < 40) addScenery();
+      scenery = scenery.filter(tree => {
+        if (tree.position.z > 10) {
+          scene.remove(tree);
+          return false;
+        }
+        return true;
+      });
 
-      // Move car forward in its local direction
-      let forward = new THREE.Vector3(0, 0, 1);
-      forward.applyEuler(car.rotation);
-      car.position.add(forward.multiplyScalar(speed));
+      // Smooth car lane change
+      let targetX = lanes[targetLane];
+      car.position.x += (targetX - car.position.x) * 0.1;
 
-      // Keep camera behind car
-      camera.position.lerp(
-        new THREE.Vector3(
-          car.position.x - Math.sin(car.rotation.y) * 10,
-          car.position.y + 5,
-          car.position.z - Math.cos(car.rotation.y) * 10
-        ),
-        0.05
-      );
-      camera.lookAt(car.position);
+      score += Math.floor(speed);
+      document.getElementById("score").innerText = "Score: " + score;
 
       renderer.render(scene, camera);
     }
 
-    animate();
+    function openStore() {
+      alert("Store coming soon!");
+    }
 
-    // Handle resize
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth/window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    function resetGame() {
+      score = 0;
+      envIndex = 0;
+      updateEnvironment();
+      car.position.x = lanes[1];
+      currentLane = 1; targetLane = 1;
+      scenery.forEach(tree => scene.remove(tree));
+      scenery = [];
+      for (let i = 0; i < 40; i++) addScenery();
+    }
   </script>
 </body>
 </html>
