@@ -2,58 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>3D Car Game</title>
+  <title>3D Car Game Improved</title>
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      height: 100%;
-      width: 100%;
-      background: #000;
-      font-family: Arial, sans-serif;
-      user-select: none;
+      margin: 0; padding: 0; overflow: hidden;
+      height: 100%; width: 100%; background: #000;
+      font-family: Arial, sans-serif; user-select: none;
     }
     #score {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #fff;
-      font-size: 20px;
-      z-index: 1;
+      position: absolute; top: 10px; left: 10px;
+      color: #fff; font-size: 20px; z-index: 1;
     }
     #buttons {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 1;
+      position: absolute; top: 10px; right: 10px; z-index: 1;
     }
     .btn {
-      border: 2px solid #fff;
-      background: transparent;
-      color: #fff;
-      padding: 8px 16px;
-      margin-left: 10px;
-      cursor: pointer;
-      font-size: 16px;
-      border-radius: 4px;
+      border: 2px solid #fff; background: transparent;
+      color: #fff; padding: 8px 16px; margin-left: 10px;
+      cursor: pointer; font-size: 16px; border-radius: 4px;
       transition: all 0.3s ease;
     }
-    .btn:hover {
-      background: #fff;
-      color: #000;
-    }
-    .btn:active {
-      transform: scale(0.9);
-    }
+    .btn:hover { background: #fff; color: #000; }
+    .btn:active { transform: scale(0.9); }
     @media (max-width: 600px) {
-      #score {
-        font-size: 16px;
-      }
-      .btn {
-        padding: 6px 12px;
-        font-size: 14px;
-      }
+      #score { font-size: 16px; }
+      .btn { padding: 6px 12px; font-size: 14px; }
     }
   </style>
 </head>
@@ -70,15 +43,21 @@
     let lanes = [-4, 0, 4];
     let currentLane = 1;
     let score = 0;
-    let environment = ["#87CEEB", "#228B22", "#EDC9AF", "#A9A9A9", "#006400"]; // city, forest, desert, mountain, village
     let envIndex = 0;
+    let envSkyColors = [
+      [0x87CEEB, 0xFFFFFF], // city (sky blue to white)
+      [0x228B22, 0x87CEEB], // forest (greenish to sky)
+      [0xEDC9AF, 0xFFE4B5], // desert (sandy to light)
+      [0xA9A9A9, 0xD3D3D3], // mountain (grey to light)
+      [0x006400, 0x87CEEB]  // village (dark green to sky)
+    ];
 
     init();
     animate();
 
     function init() {
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(environment[envIndex]);
+      updateEnvironment();
 
       camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       camera.position.set(0, 5, 10);
@@ -108,12 +87,24 @@
         scene.add(line);
       }
 
-      // Car
-      let carGeo = new THREE.BoxGeometry(2, 1, 4);
-      let carMat = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-      car = new THREE.Mesh(carGeo, carMat);
-      car.position.y = 0.5;
-      car.position.z = 0;
+      // Car: use boxes for body and wheels
+      car = new THREE.Group();
+      let bodyGeo = new THREE.BoxGeometry(2, 1, 4);
+      let bodyMat = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+      let body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.position.y = 0.75;
+      car.add(body);
+
+      let wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16);
+      let wheelMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+      for (let i of [-0.9, 0.9]) {
+        for (let j of [-1.5, 1.5]) {
+          let wheel = new THREE.Mesh(wheelGeo, wheelMat);
+          wheel.rotation.z = Math.PI / 2;
+          wheel.position.set(i, 0.4, j);
+          car.add(wheel);
+        }
+      }
       car.position.x = lanes[currentLane];
       scene.add(car);
 
@@ -126,6 +117,14 @@
 
       window.addEventListener('resize', onWindowResize, false);
       document.addEventListener('keydown', handleKey);
+    }
+
+    function updateEnvironment() {
+      let [topColor, bottomColor] = envSkyColors[envIndex];
+      let sky = new THREE.Color(topColor);
+      scene.background = sky;
+      // Optional: gradient effect by fog
+      scene.fog = new THREE.Fog(bottomColor, 50, 200);
     }
 
     function onWindowResize() {
@@ -151,8 +150,8 @@
       road.position.z += 1;
       if (road.position.z > 0) {
         road.position.z = -200;
-        envIndex = (envIndex + 1) % environment.length;
-        scene.background = new THREE.Color(environment[envIndex]);
+        envIndex = (envIndex + 1) % envSkyColors.length;
+        updateEnvironment();
       }
 
       score += 1;
@@ -168,7 +167,7 @@
     function resetGame() {
       score = 0;
       envIndex = 0;
-      scene.background = new THREE.Color(environment[envIndex]);
+      updateEnvironment();
       car.position.x = lanes[1];
       currentLane = 1;
     }
